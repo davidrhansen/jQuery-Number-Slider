@@ -1,7 +1,7 @@
-Number-Slider
-=============
+jQuery Number Slider
+====================
 
-Slide control ui for input[type="number"]
+jQuery slide control ui for input[type="number"]
 
 Set slide range limits and intervals with number input's "min", "max", and "step" attributes
 
