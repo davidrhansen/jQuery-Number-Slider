@@ -2,136 +2,138 @@
 
     $.fn.numSlider = function() {
 
-        var _this = $(this),
-            module,
-            progress,
-            val,
-            pageX;
+        $(this).each(function(){
 
-        module = {
-            _build: (function() {
-                if (!_this.hasClass('ns_loaded')) {
-                    _this.addClass('ns_loaded')
-                        .after('<div class="ns_track"><div class="ns_progress"><div class="ns_grabber"/></div></div>');
-                }
-            })(),
-            defaultValue: _this.val(),
-            field: _this,
-            id: _this.attr('id'),
-            interval: (function(){
-                if (_this.attr('step')) {
-                    return _this.attr('step');
-                } else {
-                    return 1;
-                }
+            var _this = $(this),
+                module,
+                val,
+                pageX;
+
+            module = {
+                _build: (function() {
+                    if (!_this.hasClass('ns_loaded')) {
+                        _this.addClass('ns_loaded')
+                            .after('<div class="ns_track"><div class="ns_progress"><div class="ns_grabber"/></div></div>');
+                    }
                 })(),
-            lowerLimit: (function(){
-                    if (_this.attr('min')) {
-                        return parseInt(_this.attr('min'),10);
+                defaultValue: _this.val(),
+                field: _this,
+                id: _this.attr('id'),
+                interval: (function(){
+                    if (_this.attr('step')) {
+                        return _this.attr('step');
+                    } else {
+                        return 1;
+                    }
+                    })(),
+                lowerLimit: (function(){
+                        if (_this.attr('min')) {
+                            return parseInt(_this.attr('min'),10);
+                        } else {
+                            return 0;
+                        }
+                    })(),
+                upperLimit: (function(){
+                    if (_this.attr('max')) {
+                        return parseInt(_this.attr('max'),10);
+                    } else {
+                        return 100;
+                    }
+                })(),
+                val: (function(){
+                    if (_this.val()) {
+                        return parseInt(_this.val(),10);
                     } else {
                         return 0;
                     }
-                })(),
-            upperLimit: (function(){
-                if (_this.attr('max')) {
-                    return parseInt(_this.attr('max'),10);
-                } else {
-                    return 100;
-                }
-            })(),
-            val: (function(){
-                if (_this.val()) {
-                    return parseInt(_this.val(),10);
-                } else {
-                    return 0;
-                }
-            })()
-        };
+                })()
+            };
 
-        module.track = module.field.siblings('.ns_track');
-        module.progressbar = module.track.children('.ns_progress');
-        module.grabber = module.progressbar.children('.ns_grabber');
+            module.track = module.field.siblings('.ns_track');
+            module.progressbar = module.track.children('.ns_progress');
+            module.grabber = module.progressbar.children('.ns_grabber');
 
-        module.grabber.bind('mousedown touchstart',function(e){
-            e.preventDefault();
-            ns_grab(module);
-        });
+            module.progress = (module.val - module.lowerLimit) / (module.upperLimit - module.lowerLimit) * 100;
 
-        function ns_release(module) {
-            $(document.body).removeClass('ns_moving').unbind('mousemove touchmove');
-            module.field.removeClass('ns_active');
-            module.val = module.field.val();
-        }
+            module.field.bind('change keyup',function(){
+                module.val = module.field.val();
+                module.progress = (module.val - module.lowerLimit) / (module.upperLimit - module.lowerLimit) * 100;
+                ns_updateSliderPosition(module);
+            });
 
-        function ns_grab(module) {
+            module.track.bind('mousedown touchstart',function(e){
+                ns_grab(module,e);
+            });
 
-            module.leftOffset = module.track.offset().left;
-            module.rightOffset = module.track.outerWidth() + module.leftOffset;
+            function ns_release(module) {
+                $(document.body).removeClass('ns_moving').unbind('mousemove touchmove');
+                module.field.removeClass('ns_active');
+                module.val = module.field.val();
+            }
 
-            $(document.body).bind('mousemove touchmove', function(e){
+            function ns_grab(module,e) {
+
                 ns_move(module,e);
-            });
 
-        }
+                $(document.body)
+                    .addClass('ns_moving')
+                    .bind('mousemove touchmove', function(e){
+                        ns_move(module,e);
+                    })
+                    .bind('mouseup touchend',function(){
+                        ns_release(module);
+                    });
 
-        function ns_updateSliderPosition(module) {
-
-            var progress = module.val;
-
-            if (progress > 100) {
-                progress = 100;
-            } else if (progress < 0) {
-                progress = 0;
+                module.field.addClass('ns_active');
             }
 
-            module.progressbar.css({
-                width: progress+'%'
-            });
+            function ns_updateSliderPosition(module) {
 
-        }
+                if (module.progress > 100) {
+                    module.progress = 100;
+                } else if (module.progress < 0) {
+                    module.progress = 0;
+                }
 
-        function ns_move(module,e) {
+                module.progressbar.css({
+                    width: module.progress+'%'
+                });
 
-            e.preventDefault();
-
-            if (e.originalEvent.touches) {
-                pageX = e.originalEvent.touches[0].pageX;
-            } else if (e.originalEvent.pageX) {
-                pageX = e.originalEvent.pageX;
-            } else {
-                pageX = e.pageX;
             }
 
-            progress = (pageX - module.leftOffset) / (module.rightOffset - module.leftOffset) * 100;
+            function ns_move(module,e) {
 
-            val = Math.round(((progress * (module.upperLimit - module.lowerLimit)/100) + module.lowerLimit)/ module.interval) * module.interval;
+                e.preventDefault();
 
-            if (val > module.upperLimit) {
-                val = module.upperLimit;
-            } else if (val < module.lowerLimit) {
-                val = module.lowerLimit;
+                if (e.originalEvent.touches) {
+                    pageX = e.originalEvent.touches[0].pageX;
+                } else if (e.originalEvent.pageX) {
+                    pageX = e.originalEvent.pageX;
+                } else {
+                    pageX = e.pageX;
+                }
+
+                module.leftOffset = module.track.offset().left;
+                module.rightOffset = module.track.outerWidth() + module.leftOffset;
+
+                module.progress = (pageX - module.leftOffset) / (module.rightOffset - module.leftOffset) * 100;
+
+                val = Math.round(((module.progress * (module.upperLimit - module.lowerLimit)/100) + module.lowerLimit)/ module.interval) * module.interval;
+
+                if (val > module.upperLimit) {
+                    val = module.upperLimit;
+                } else if (val < module.lowerLimit) {
+                    val = module.lowerLimit;
+                }
+
+                module.val = val;
+
+                module.field.val(val).trigger('change');
             }
 
-            module.val = val;
-
-            module.field.val(val).trigger('change');
-        }
-
-        module.field.bind('change keyup',function(){
-            module.val = module.field.val();
             ns_updateSliderPosition(module);
-        });
 
-        module.track.bind('mousedown touchstart',function(e){
-            ns_grab(module);
-            ns_move(module,e);
-            $(document.body).bind('mouseup touchend',function(){
-                ns_release(module);
-            }).addClass('ns_moving');
-            module.field.addClass('ns_active');
         });
-
-        ns_updateSliderPosition(module,module.val);
 
     };
 
