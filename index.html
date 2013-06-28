@@ -16,21 +16,29 @@
             height: 100%;
         }
         body {
-            margin: 0;
-            padding: 100px 10%;
+            padding: 0 10%;
             font-family: sans-serif;
         }
         label {
             font-weight: bold;
             font-size: 16px;
         }
-        .numslider {
+        code {
+            font-size: 11px;
+            background: #f5f5f5;
+            padding: 2px;
+        }
+        p {
+            margin: 40px 0;
+        }
+        
+        input[type="number"] {
             float: right;
             border: 1px solid #aaa;
             padding: 3px;
         }
-        .numslider:focus,
-        .ns_active {
+        input[type="number"]:focus,
+        input[type="number"].ns_active {
             border-color: #09f;
             box-shadow: 0px 0px 5px #09f;
             outline: 0 none;
@@ -40,23 +48,29 @@
 </head>
 <body>
 
+    <h1>jQuery Number Slider</h1>
+    <a href="https://github.com/davidrhansen/jQuery-Number-Slider">Get it on GitHub</a>
+    
     <p>
         <label for="field_1">Slide Me!</label>
-        <input class="numslider" id="field_1" type="number" value="0" min="0" max="100" step="1" />
+        <input id="field_1" type="number" value="0" min="0" max="100" step="1" />
+        <code>&lt;input type="number" value="0" min="0" max="100" step="1" /></code>
     </p>
 
     <p>
         <label for="field_2">And Again!</label>
-        <input class="numslider" id="field_2" type="number" value="10" min="0" max="50" step="0.5" />
+        <input id="field_2" type="number" value="10" min="0" max="50" step="0.5" />
+        <code>&lt;input type="number" value="10" min="0" max="50" step="0.5" /></code>
     </p>
 
     <p>
         <label for="field_3">One More Time!</label>
-        <input class="numslider" id="field_3" type="number" value="800" min="400" max="1000" step="10" />
+        <input id="field_3" type="number" value="800" min="400" max="1000" step="10" />
+        <code>&lt;input type="number" value="800" min="400" max="1000" step="10" /></code>
     </p>
 
     <script type="text/javascript">
-        $('.numslider').numSlider();
+        $('input[type="number"]').numSlider();
     </script>
 
 </body>
