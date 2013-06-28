@@ -49,7 +49,7 @@
                 })()
             };
 
-            module.track = module.field.siblings('.ns_track');
+            module.track = module.field.next('.ns_track');
             module.progressbar = module.track.children('.ns_progress');
             module.grabber = module.progressbar.children('.ns_grabber');
 
