@@ -7,24 +7,26 @@
             var _this = $(this),
                 module,
                 val,
-                pageX;
+                pageX,
+                markup;
+                
+            markup = '<div class="ns_track"><div class="ns_progress"><div class="ns_grabber"/></div></div>';
 
             module = {
                 _build: (function() {
                     if (!_this.hasClass('ns_loaded')) {
-                        _this.addClass('ns_loaded')
-                            .after('<div class="ns_track"><div class="ns_progress"><div class="ns_grabber"/></div></div>');
+                        _this.addClass('ns_loaded').after(markup);
                     }
                 })(),
                 defaultValue: _this.val(),
                 field: _this,
                 id: _this.attr('id'),
                 interval: (function(){
-                    if (_this.attr('step')) {
-                        return _this.attr('step');
-                    } else {
-                        return 1;
-                    }
+                        if (_this.attr('step')) {
+                            return _this.attr('step');
+                        } else {
+                            return 1;
+                        }
                     })(),
                 lowerLimit: (function(){
                         if (_this.attr('min')) {
@@ -34,19 +36,19 @@
                         }
                     })(),
                 upperLimit: (function(){
-                    if (_this.attr('max')) {
-                        return parseInt(_this.attr('max'),10);
-                    } else {
-                        return 100;
-                    }
-                })(),
+                        if (_this.attr('max')) {
+                            return parseInt(_this.attr('max'),10);
+                        } else {
+                            return 100;
+                        }
+                    })(),
                 val: (function(){
-                    if (_this.val()) {
-                        return parseInt(_this.val(),10);
-                    } else {
-                        return 0;
-                    }
-                })()
+                        if (_this.val()) {
+                            return parseInt(_this.val(),10);
+                        } else {
+                            return 0;
+                        }
+                    })()
             };
 
             module.track = module.field.next('.ns_track');
@@ -72,6 +74,9 @@
             }
 
             function ns_grab(module,e) {
+            
+                module.leftOffset = module.track.offset().left;
+                module.rightOffset = module.track.outerWidth() + module.leftOffset;
 
                 ns_move(module,e);
 
@@ -112,9 +117,6 @@
                 } else {
                     pageX = e.pageX;
                 }
-
-                module.leftOffset = module.track.offset().left;
-                module.rightOffset = module.track.outerWidth() + module.leftOffset;
 
                 module.progress = (pageX - module.leftOffset) / (module.rightOffset - module.leftOffset) * 100;
 
