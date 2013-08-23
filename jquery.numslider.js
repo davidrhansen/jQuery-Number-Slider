@@ -30,21 +30,21 @@
                     })(),
                 lowerLimit: (function(){
                         if (_this.attr('min')) {
-                            return parseInt(_this.attr('min'),10);
+                            return parseFloat(_this.attr('min'),10);
                         } else {
                             return 0;
                         }
                     })(),
                 upperLimit: (function(){
                         if (_this.attr('max')) {
-                            return parseInt(_this.attr('max'),10);
+                            return parseFloat(_this.attr('max'),10);
                         } else {
                             return 100;
                         }
                     })(),
                 val: (function(){
                         if (_this.val()) {
-                            return parseInt(_this.val(),10);
+                            return parseFloat(_this.val(),10);
                         } else {
                             return 0;
                         }
